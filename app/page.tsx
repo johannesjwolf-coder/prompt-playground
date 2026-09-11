@@ -1,221 +1,359 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import LibraryBackground from "@/components/owl/LibraryBackground";
+import OwlStage from "@/components/owl/OwlStage";
+import StonePlatform from "@/components/owl/StonePlatform";
+import { LONG_RESPONSE_MS, useOwlQuest } from "@/lib/useOwlQuest";
+import { DEFAULT_EFFORT, DEFAULT_MODEL, EFFORTS, MODELS, type Effort, type ModelId } from "@/lib/models";
+
+type SavedPrompt = { id: string; prompt: string; result: string; date: string };
+
+const STORAGE_KEY = "prompt-playground:library";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(1000);
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [savedPrompts, setSavedPrompts] = useState<any>([]);
+  const [model, setModel] = useState<ModelId>(DEFAULT_MODEL);
+  const [effort, setEffort] = useState<Effort>(DEFAULT_EFFORT);
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [typing, setTyping] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const testPrompt = async () => {
+  const perchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const quest = useOwlQuest();
+
+  // Library persistence (localStorage).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      // Hydrate from localStorage after mount (SSR renders an empty library).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (raw) setSavedPrompts(JSON.parse(raw));
+    } catch {}
+  }, []);
+  const persist = (list: SavedPrompt[]) => {
+    setSavedPrompts(list);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    } catch {}
+  };
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  };
+
+  const onType = (value: string) => {
+    setPrompt(value);
+    setTyping(true);
+    if (typingTimer.current) clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => setTyping(false), 1800);
+  };
+
+  const testPrompt = () => {
     if (!prompt.trim()) {
-      alert("Prompt eingeben!");
+      showToast("Erst einen Prompt eingeben 🪶");
       return;
     }
-
-    setLoading(true);
-    setResult("");
-
-    try {
-      const res = await fetch("/api/prompt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          temperature: parseFloat(temperature.toString()),
-          maxTokens: parseInt(maxTokens.toString()),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setResult(data.content);
-      } else {
-        setResult("Fehler: " + data.error);
-      }
-    } catch (error) {
-      setResult("Fehler beim API Call: " + error);
-    }
-
-    setLoading(false);
+    setTyping(false);
+    void quest.run({ prompt, temperature, maxTokens, model, effort });
   };
 
   const savePrompt = () => {
-    if (!result) return;
-
-    const newPrompt = {
-      id: Date.now().toString(),
-      prompt,
-      result,
-      date: new Date().toLocaleDateString("de-DE"),
-    };
-
-    setSavedPrompts([...savedPrompts, newPrompt]);
-    alert("Prompt gespeichert! ✅");
+    if (!quest.result) return;
+    persist([
+      { id: Date.now().toString(), prompt, result: quest.result, date: new Date().toLocaleDateString("de-DE") },
+      ...savedPrompts,
+    ]);
+    showToast("In der Bibliothek abgelegt 📚");
   };
 
-  const loadPrompt = (saved: any) => {
+  const loadPrompt = (saved: SavedPrompt) => {
     setPrompt(saved.prompt);
-    setResult(saved.result);
+    quest.loadResult(saved.result);
   };
 
-  const deletePrompt = (id: string) => {
-    setSavedPrompts(savedPrompts.filter((p: any) => p.id !== id));
+  const deletePrompt = (id: string) => persist(savedPrompts.filter((p) => p.id !== id));
+
+  const exportLibrary = () => {
+    const blob = new Blob([JSON.stringify(savedPrompts, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "prompt-bibliothek.json";
+    a.click();
+    URL.revokeObjectURL(url);
   };
+
+  const statusLine = (() => {
+    switch (quest.status) {
+      case "flying":
+        return quest.revealMode === "live"
+          ? "🪶 Die Eule kehrt zurück – Antwort strömt herein …"
+          : quest.revealMode === "deferred"
+          ? "📖 Die Eule hat das Buch gefunden und bringt es …"
+          : "🦉 Die Eule durchsucht die Bibliothek …";
+      case "revealing":
+        return "✨ Das Buch öffnet sich …";
+      case "done":
+        return quest.elapsedMs != null
+          ? `✅ Antwort in ${(quest.elapsedMs / 1000).toFixed(1)}s (${quest.revealMode === "deferred" ? "lange Suche" : "schnell"})`
+          : "✅ Antwort geladen";
+      case "error":
+        return "⚠️ Die Eule kam ohne Buch zurück.";
+      default:
+        return "Die Eule wartet auf deinen Prompt.";
+    }
+  })();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            🚀 Prompt Engineering Playground
-          </h1>
-          <p className="text-gray-400">
-            Teste deine Prompts in Echtzeit mit Claude
-          </p>
-        </div>
+    <div className="playground">
+      <LibraryBackground />
+      <OwlStage
+        command={quest.command}
+        perchRef={perchRef}
+        gazeRef={inputRef}
+        userTyping={typing}
+        onLanded={quest.onOwlLanded}
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
-              <label className="block text-sm font-semibold text-gray-200 mb-3">
-                Dein Prompt
-              </label>
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Schreib hier deinen Prompt ein..."
-                className="w-full h-40 p-4 bg-slate-800 text-white border border-slate-600 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-              />
-            </div>
+      <main className="relative z-10 min-h-screen px-4 py-8 sm:px-8">
+        <div className="mx-auto max-w-7xl">
+          <header className="mb-8">
+            <h1 className="font-serif text-4xl font-bold tracking-tight text-amber-50 drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+              🦉 Prompt Engineering Playground
+            </h1>
+            <p className="mt-1 text-amber-200/70">
+              Teste deine Prompts in Echtzeit mit Claude – die Eule sucht das passende Buch.
+            </p>
+          </header>
 
-            <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
-              <h3 className="text-lg font-semibold text-gray-200 mb-4">
-                Parameter
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <label className="text-sm font-medium text-gray-300">
-                      Temperatur (Kreativität)
-                    </label>
-                    <span className="text-blue-400 font-semibold">
-                      {temperature.toFixed(1)}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="2"
-                    step="0.1"
-                    value={temperature}
-                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer"
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {/* Left column */}
+            <div className="space-y-6 lg:col-span-2">
+              {/* Prompt + perch */}
+              <section className="glass-card p-6">
+                <label className="mb-3 block text-sm font-semibold text-amber-100/90">Dein Prompt</label>
+                <div className="prompt-row">
+                  <textarea
+                    ref={inputRef}
+                    value={prompt}
+                    onChange={(e) => onType(e.target.value)}
+                    onFocus={() => setTyping(true)}
+                    onBlur={() => setTyping(false)}
+                    onKeyDown={(e) => {
+                      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") testPrompt();
+                    }}
+                    placeholder="Schreib hier deinen Prompt ein… (⌘/Ctrl + Enter zum Senden)"
+                    className="prompt-input"
+                    disabled={quest.busy}
                   />
-                  <p className="text-xs text-gray-400 mt-1">
-                    0 = Konsistent, 2 = Sehr kreativ
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <label className="text-sm font-medium text-gray-300">
-                      Max Tokens (Länge)
-                    </label>
-                    <span className="text-blue-400 font-semibold">
-                      {maxTokens}
-                    </span>
+                  <div className="perch-column">
+                    <StonePlatform ref={perchRef} className="perch" />
                   </div>
-                  <input
-                    type="range"
-                    min="100"
-                    max="4000"
-                    step="100"
-                    value={maxTokens}
-                    onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                    className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Wie lange die Antwort sein soll
-                  </p>
                 </div>
-              </div>
-            </div>
+              </section>
 
-            <div className="flex gap-4">
-              <button
-                onClick={testPrompt}
-                disabled={loading}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
-              >
-                {loading ? "⏳ Lädt..." : "🚀 Claude testen"}
-              </button>
-              <button
-                onClick={savePrompt}
-                disabled={!result}
-                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
-              >
-                💾 Speichern
-              </button>
-            </div>
-
-            {result && (
-              <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
-                <h3 className="text-lg font-semibold text-gray-200 mb-3">
-                  📝 Antwort von Claude
-                </h3>
-                <div className="bg-slate-800 p-4 rounded text-gray-100 whitespace-pre-wrap max-h-96 overflow-y-auto">
-                  {result}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-slate-700 rounded-lg p-6 border border-slate-600 h-fit">
-            <h3 className="text-lg font-semibold text-gray-200 mb-4">
-              📚 Meine Prompts ({savedPrompts.length})
-            </h3>
-
-            <div className="space-y-2 max-h-[600px] overflow-y-auto">
-              {savedPrompts.length === 0 ? (
-                <p className="text-gray-400 text-sm">
-                  Noch keine Prompts gespeichert. Teste einen und speichern!
-                </p>
-              ) : (
-                savedPrompts.map((saved: any) => (
-                  <div
-                    key={saved.id}
-                    className="bg-slate-800 p-3 rounded border border-slate-600 hover:border-blue-500 transition"
-                  >
-                    <p className="text-sm text-gray-300 mb-2 truncate font-medium">
-                      {saved.prompt.substring(0, 50)}...
-                    </p>
-                    <p className="text-xs text-gray-500 mb-2">{saved.date}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => loadPrompt(saved)}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 rounded transition"
-                      >
-                        Laden
-                      </button>
-                      <button
-                        onClick={() => deletePrompt(saved.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white text-xs py-1 px-3 rounded transition"
-                      >
-                        ✕
-                      </button>
+              {/* Parameters */}
+              <section className="glass-card p-6">
+                <h3 className="mb-4 text-lg font-semibold text-amber-100/90">Parameter</h3>
+                <div className="space-y-5">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-amber-100/70">Modell</label>
+                    <div className="model-picker">
+                      {(Object.keys(MODELS) as ModelId[]).map((id) => (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => setModel(id)}
+                          className={`model-chip ${model === id ? "model-chip--active" : ""}`}
+                          disabled={quest.busy}
+                        >
+                          <span className="font-semibold">{MODELS[id].label}</span>
+                          <span className="block text-xs opacity-70">{MODELS[id].hint}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-                ))
-              )}
+
+                  {MODELS[model].controls === "effort" ? (
+                    <div>
+                      <div className="mb-2 flex justify-between">
+                        <label className="text-sm font-medium text-amber-100/70">Effort (Denktiefe)</label>
+                        <span className="font-semibold text-blue-400">{effort}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max={EFFORTS.length - 1}
+                        step="1"
+                        value={EFFORTS.indexOf(effort)}
+                        onChange={(e) => setEffort(EFFORTS[parseInt(e.target.value)])}
+                        className="slider"
+                      />
+                      <p className="mt-1 text-xs text-amber-100/50">
+                        low = schnell &amp; knapp, max = maximale Gründlichkeit (Fable denkt immer mit)
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="mb-2 flex justify-between">
+                        <label className="text-sm font-medium text-amber-100/70">Temperatur (Kreativität)</label>
+                        <span className="font-semibold text-blue-400">{temperature.toFixed(1)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={temperature}
+                        onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                        className="slider"
+                      />
+                      <p className="mt-1 text-xs text-amber-100/50">0 = Konsistent, 1 = Sehr kreativ</p>
+                    </div>
+                  )}
+                  <div>
+                    <div className="mb-2 flex justify-between">
+                      <label className="text-sm font-medium text-amber-100/70">Max Tokens (Länge)</label>
+                      <span className="font-semibold text-blue-400">{maxTokens}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="100"
+                      max="4000"
+                      step="100"
+                      value={maxTokens}
+                      onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                      className="slider"
+                    />
+                    <p className="mt-1 text-xs text-amber-100/50">Wie lange die Antwort sein soll</p>
+                  </div>
+                </div>
+              </section>
+
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={testPrompt}
+                  disabled={quest.busy}
+                  className="btn-primary flex-1"
+                >
+                  {quest.busy ? "🦉 Eule unterwegs …" : "🚀 Claude testen"}
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={savePrompt}
+                  disabled={!quest.result || quest.busy}
+                  className="btn-secondary flex-1"
+                >
+                  💾 In Bibliothek speichern
+                </motion.button>
+              </div>
+
+              <p className="text-sm text-amber-100/60" aria-live="polite">
+                {statusLine}
+                {quest.status === "idle" && (
+                  <span className="text-amber-100/35"> Antworten über {LONG_RESPONSE_MS / 1000}s bringt sie als Buch zurück.</span>
+                )}
+              </p>
             </div>
+
+            {/* Right column: the library */}
+            <aside className="space-y-6">
+              <section className={`glass-card book-box p-6 ${quest.bookGlow ? "book-box--glow" : ""}`}>
+                <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-amber-100/90">
+                  📖 Antwort von Claude
+                  {quest.busy && <span className="quill-spinner" aria-hidden />}
+                </h3>
+                <div className="book-page">
+                  <AnimatePresence mode="wait">
+                    {quest.result ? (
+                      <motion.div
+                        key="text"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="whitespace-pre-wrap"
+                      >
+                        {quest.result}
+                        {(quest.status === "flying" || quest.status === "revealing") && <span className="caret" />}
+                      </motion.div>
+                    ) : (
+                      <motion.p
+                        key="empty"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="book-placeholder"
+                      >
+                        {quest.status === "flying"
+                          ? "Die Seiten sind noch leer – die Eule sucht …"
+                          : "Hier erscheint das, was die Eule aus der Bibliothek mitbringt."}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
+
+              <section className="glass-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-amber-100/90">📚 Meine Prompts ({savedPrompts.length})</h3>
+                  {savedPrompts.length > 0 && (
+                    <button onClick={exportLibrary} className="text-xs text-blue-400 hover:text-blue-300">
+                      ⬇ Export
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-[520px] space-y-2 overflow-y-auto pr-1">
+                  {savedPrompts.length === 0 ? (
+                    <p className="text-sm text-amber-100/40">Noch keine Prompts gespeichert. Teste einen und speichere ihn!</p>
+                  ) : (
+                    savedPrompts.map((saved) => (
+                      <motion.div
+                        key={saved.id}
+                        layout
+                        initial={{ opacity: 0, x: 12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="saved-item"
+                      >
+                        <p className="mb-1 truncate text-sm font-medium text-amber-50/90">{saved.prompt.slice(0, 60)}</p>
+                        <p className="mb-2 text-xs text-amber-100/40">{saved.date}</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => loadPrompt(saved)} className="btn-mini flex-1">
+                            Laden
+                          </button>
+                          <button onClick={() => deletePrompt(saved.id)} className="btn-mini btn-mini--danger">
+                            ✕
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </section>
+            </aside>
           </div>
         </div>
-      </div>
+      </main>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            className="toast"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
