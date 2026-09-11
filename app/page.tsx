@@ -57,19 +57,18 @@ export default function Home() {
     alert("Prompt gespeichert! ✅");
   };
 
-  const loadPrompt = (saved: (typeof savedPrompts)[0]) => {
+  const loadPrompt = (saved: any) => {
     setPrompt(saved.prompt);
     setResult(saved.result);
   };
 
   const deletePrompt = (id: string) => {
-  setSavedPrompts(savedPrompts.filter((p: any) => p.id !== id));
+    setSavedPrompts(savedPrompts.filter((p: any) => p.id !== id));
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
             🚀 Prompt Engineering Playground
@@ -80,9 +79,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Editor */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Prompt Input */}
             <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
               <label className="block text-sm font-semibold text-gray-200 mb-3">
                 Dein Prompt
@@ -95,14 +92,12 @@ export default function Home() {
               />
             </div>
 
-            {/* Parameters */}
             <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
               <h3 className="text-lg font-semibold text-gray-200 mb-4">
                 Parameter
               </h3>
 
               <div className="space-y-4">
-                {/* Temperatur */}
                 <div>
                   <div className="flex justify-between mb-2">
                     <label className="text-sm font-medium text-gray-300">
@@ -126,7 +121,6 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Max Tokens */}
                 <div>
                   <div className="flex justify-between mb-2">
                     <label className="text-sm font-medium text-gray-300">
@@ -152,7 +146,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-4">
               <button
                 onClick={testPrompt}
@@ -170,7 +163,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Result */}
             {result && (
               <div className="bg-slate-700 rounded-lg p-6 border border-slate-600">
                 <h3 className="text-lg font-semibold text-gray-200 mb-3">
@@ -183,7 +175,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right Column: Library */}
           <div className="bg-slate-700 rounded-lg p-6 border border-slate-600 h-fit">
             <h3 className="text-lg font-semibold text-gray-200 mb-4">
               📚 Meine Prompts ({savedPrompts.length})
