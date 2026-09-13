@@ -102,6 +102,60 @@
       "note": "Ich habe die Vorlage deutlich erweitert: neu sind eine Rolle für die KI, eine Strategie-Ebene mit Kernbotschaften, eine detaillierte Tabellenstruktur mit Uhrzeit, Bildidee und Hashtags, Produktionshinweise sowie ein Abschnitt zur Erfolgsmessung; zudem kamen die Platzhalter [BRANCHE] und [TONALITAET] hinzu. Funktioniert am besten in Text-KIs wie ChatGPT oder Claude.",
       "createdAt": "2026-09-12T00:24:44.476Z",
       "source": "eule"
+    },
+    {
+      "id": "eule-e-mail-professionell-formulieren-mtxovce6",
+      "title": "E-Mail professionell formulieren",
+      "category": "Büro & E-Mails",
+      "tags": [
+        "E-Mail",
+        "Geschäftskorrespondenz",
+        "Tonalität",
+        "Büro",
+        "Kommunikation"
+      ],
+      "description": "Erstellt aus Stichworten oder einem Entwurf eine professionelle, klare und höfliche E-Mail für den geschäftlichen Alltag.",
+      "prompt": "Du bist eine erfahrene Fachperson für Geschäftskorrespondenz mit einem Gespür für klare, höfliche und wirkungsvolle E-Mails. Schreibe eine professionelle E-Mail an [EMPFAENGER] mit dem Ziel: [ZIEL]. Kontext und Inhalt: [INHALT]. Die Beziehung zur Empfängerin oder zum Empfänger ist [BEZIEHUNG], die gewünschte Tonalität ist [TONALITAET]. Die E-Mail wird in [SPRACHE] verfasst.\n\nAnforderungen:\n- Aussagekräftige Betreffzeile, passende Anrede und Grussformel.\n- Der wichtigste Punkt steht am Anfang; danach folgen Begründung oder Details in kurzen Absätzen.\n- Klarer Abschluss mit konkretem nächsten Schritt oder einer Bitte (z. B. Antwort bis zu einem Termin).\n- Länge: maximal [LAENGE] Wörter, keine Floskeln, keine Wiederholungen, keine Übertreibungen.\n- Vermeide passive Konstruktionen, Fachjargon und unnötige Höflichkeitsformeln; bleibe respektvoll und auf den Punkt.\n- Verwende Schweizer Schreibweise (ss statt ß), falls die Sprache Deutsch ist.\n\nGib zuerst die Betreffzeile aus, dann den vollständigen E-Mail-Text. Ergänze am Ende in zwei Sätzen, worauf du bei Ton und Aufbau geachtet hast.",
+      "placeholders": [
+        {
+          "key": "EMPFAENGER",
+          "label": "Empfängerin oder Empfänger (Rolle, nicht Name)",
+          "example": "die Projektleiterin eines Kunden"
+        },
+        {
+          "key": "ZIEL",
+          "label": "Ziel der E-Mail",
+          "example": "eine Fristverlängerung um eine Woche erhalten"
+        },
+        {
+          "key": "INHALT",
+          "label": "Inhalt und Kontext in Stichworten",
+          "example": "Lieferung der Konzeptunterlagen verzögert sich wegen offener Rückfragen, neuer Termin Freitag nächste Woche, Zwischenstand kann sofort geliefert werden"
+        },
+        {
+          "key": "BEZIEHUNG",
+          "label": "Beziehung zur Empfängerin oder zum Empfänger",
+          "example": "geschäftlich, per Sie, seit zwei Jahren Zusammenarbeit"
+        },
+        {
+          "key": "TONALITAET",
+          "label": "Gewünschte Tonalität",
+          "example": "freundlich, verbindlich, lösungsorientiert"
+        },
+        {
+          "key": "SPRACHE",
+          "label": "Sprache der E-Mail",
+          "example": "Deutsch"
+        },
+        {
+          "key": "LAENGE",
+          "label": "Maximale Länge in Wörtern",
+          "example": "150"
+        }
+      ],
+      "note": "Funktioniert am besten in Text-KIs wie ChatGPT, Claude oder Gemini; je konkreter die Stichworte unter [INHALT], desto weniger musst du nachbearbeiten.",
+      "createdAt": "2026-09-12T01:10:54.849Z",
+      "source": "eule"
     }
   ]
 }
