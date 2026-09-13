@@ -14,6 +14,8 @@ type Props = {
   /** True while the user is focused on / typing into the input. */
   userTyping?: boolean;
   onLanded?: (withBook: boolean) => void;
+  /** Increment to trigger a short joy flight (e.g. after copying a prompt). Ignored while busy. */
+  celebrateToken?: number;
 };
 
 type Point = { x: number; y: number };
@@ -44,7 +46,7 @@ function curveKeyframes(from: Point, to: Point, steps = 28): { xs: number[]; ys:
   return { xs, ys };
 }
 
-export default function OwlStage({ command, perchRef, gazeRef, userTyping, onLanded }: Props) {
+export default function OwlStage({ command, perchRef, gazeRef, userTyping, onLanded, celebrateToken = 0 }: Props) {
   const owlRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(-9999);
   const y = useMotionValue(-9999);
@@ -127,7 +129,7 @@ export default function OwlStage({ command, perchRef, gazeRef, userTyping, onLan
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   const land = useCallback(
-    async (withBook: boolean) => {
+    async (withBook: boolean, notify = true) => {
       // Final approach: settle onto the perch, face the user.
       setMood(withBook ? "carrying" : "flying");
       await flySegment(perchPoint(), rand(2.0, 2.6));
@@ -138,7 +140,7 @@ export default function OwlStage({ command, perchRef, gazeRef, userTyping, onLan
       animate(tilt, 0, { type: "spring", stiffness: 200, damping: 14 });
       flyingRef.current = false;
       setMood("happy");
-      onLandedRef.current?.(withBook);
+      if (notify) onLandedRef.current?.(withBook);
       await sleep(2400);
       if (!flyingRef.current) setMood("idle");
     },
@@ -178,6 +180,23 @@ export default function OwlStage({ command, perchRef, gazeRef, userTyping, onLan
       await land(false);
     }
   }, [flySegment, randomPoint, land, owlSize, stopActive, x, y, tilt]);
+
+  // Joy flight: two quick swoops around the room, then back to the perch (no onLanded callback).
+  const celebrate = useCallback(async () => {
+    if (flyingRef.current || cmdRef.current !== "sit") return;
+    flyingRef.current = true;
+    setMood("flying");
+    for (let i = 0; i < 2; i++) {
+      const ok = await flySegment(randomPoint(), rand(1.3, 1.8));
+      if (!ok || cmdRef.current !== "sit") break;
+    }
+    await land(false, false);
+  }, [flySegment, randomPoint, land]);
+
+  useEffect(() => {
+    if (celebrateToken > 0) void celebrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [celebrateToken]);
 
   // React to commands.
   useEffect(() => {

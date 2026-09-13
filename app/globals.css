@@ -384,3 +384,161 @@ body {
   color: rgba(90, 60, 30, 0.55);
   font-style: italic;
 }
+
+/* ---------- Prompt library ---------- */
+.cat-chip {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: #fdf3df;
+  border: 1px solid rgba(255, 200, 120, 0.18);
+  background: rgba(10, 8, 6, 0.5);
+  transition: border-color 0.15s, background 0.15s;
+}
+.cat-chip:hover { border-color: rgba(255, 215, 0, 0.5); }
+.cat-chip--active {
+  border-color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+}
+.lib-search {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  color: #fdf3df;
+  border: 1px solid rgba(255, 210, 140, 0.18);
+  background: rgba(10, 8, 6, 0.6);
+  outline: none;
+}
+.lib-search:focus { border-color: var(--accent); }
+.tag {
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.35rem;
+  font-size: 0.68rem;
+  color: rgba(255, 230, 190, 0.8);
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+}
+.btn-mini--ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 200, 120, 0.25);
+  color: #fdf3df;
+}
+.btn-mini--ghost:hover { background: rgba(255, 215, 0, 0.08); }
+.placeholder-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: rgba(10, 8, 6, 0.55);
+}
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+.placeholder-input {
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.45rem;
+  font-size: 0.85rem;
+  color: #fdf3df;
+  border: 1px solid rgba(255, 210, 140, 0.18);
+  background: rgba(20, 14, 8, 0.7);
+  outline: none;
+}
+.placeholder-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+.placeholder-input::placeholder { color: rgba(255, 230, 190, 0.3); }
+
+/* ---------- Idea chips ---------- */
+.idea-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.idea-label {
+  font-size: 0.75rem;
+  color: rgba(255, 230, 190, 0.6);
+  margin-right: 0.2rem;
+}
+.idea-chip {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: #fdf3df;
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  background: rgba(255, 215, 0, 0.07);
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.idea-chip:hover { border-color: var(--gold); background: rgba(255, 215, 0, 0.16); transform: translateY(-1px); }
+.idea-chip--ghost { border-style: dashed; background: transparent; color: rgba(255, 230, 190, 0.7); }
+.answer-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* ---------- Prompt result & community ---------- */
+.eule-badge {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #1a1208;
+  background: var(--gold);
+  vertical-align: middle;
+}
+.ph-mark {
+  padding: 0 0.15em;
+  border-radius: 0.2em;
+  background: rgba(255, 200, 0, 0.35);
+  color: #5a3a00;
+  font-weight: 600;
+}
+.book-page--result {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.depth-picker {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 200, 120, 0.16);
+  background: rgba(10, 8, 6, 0.5);
+}
+.depth-chip {
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: rgba(255, 230, 190, 0.7);
+  transition: background 0.15s, color 0.15s;
+}
+.depth-chip:hover:not(:disabled) { color: #fdf3df; }
+.depth-chip--active { background: rgba(255, 215, 0, 0.16); color: var(--gold); font-weight: 600; }
+.depth-chip:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.cancel-link {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: rgba(255, 230, 190, 0.6);
+  border: 1px solid rgba(255, 200, 120, 0.2);
+  transition: color 0.15s, border-color 0.15s;
+}
+.cancel-link:hover { color: #ffb4b4; border-color: rgba(255, 120, 120, 0.5); }
+.refine-box {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(255, 200, 120, 0.18);
+}
+
+.cat-count {
+  margin-left: 0.2rem;
+  font-size: 0.65rem;
+  opacity: 0.55;
+}

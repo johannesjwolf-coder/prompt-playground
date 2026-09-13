@@ -1,0 +1,107 @@
+{
+  "templates": [
+    {
+      "id": "eule-e-mail-professionell-ueberarbeiten-mtxmyur5",
+      "title": "E-Mail professionell überarbeiten",
+      "category": "Büro & E-Mails",
+      "tags": [
+        "E-Mail",
+        "Überarbeiten",
+        "Business-Kommunikation",
+        "Professionalität",
+        "Tonalität"
+      ],
+      "description": "Verwandelt einen E-Mail-Entwurf in eine professionelle, klar strukturierte und fehlerfreie Nachricht mit passender Tonalität.",
+      "prompt": "Du bist ein erfahrener Business-Kommunikationsberater und Lektor für professionelle Geschäftskorrespondenz. Überarbeite den folgenden E-Mail-Entwurf so, dass er maximal professionell, klar und wirkungsvoll ist.\n\nKontext: Die E-Mail geht an [EMPFAENGER]. Das Ziel der Nachricht ist [ZIEL]. Die gewünschte Tonalität ist [TONALITAET]. Sprache: [SPRACHE], Schweizer Schreibweise mit ss statt ß, falls Deutsch.\n\nMein Entwurf:\n[ENTWURF]\n\nVorgehen:\n1. Korrigiere Rechtschreibung, Grammatik und Zeichensetzung vollständig.\n2. Strukturiere die E-Mail logisch: prägnante Betreffzeile, passende Anrede, ein klarer Einstieg, das Anliegen in kurzen Absätzen, eine konkrete Handlungsaufforderung oder Zusammenfassung, professionelle Grussformel.\n3. Formuliere höflich, respektvoll und selbstbewusst, ohne unterwürfig oder gestelzt zu wirken. Vermeide Floskeln, Füllwörter, Umgangssprache, Ausrufezeichen und Emojis.\n4. Kürze auf das Wesentliche; die E-Mail soll maximal [MAXLAENGE] Wörter haben.\n5. Behalte alle inhaltlichen Fakten bei und erfinde keine neuen Informationen.\n\nAusgabeformat: Zuerst die fertige E-Mail inklusive Betreffzeile. Danach unter der Überschrift «Änderungen» drei bis fünf Stichpunkte, was du verbessert hast und warum. Frage nach, falls eine Information für die E-Mail fehlt, statt sie zu erraten.",
+      "placeholders": [
+        {
+          "key": "EMPFAENGER",
+          "label": "Empfänger und Beziehung zu dir",
+          "example": "eine Neukundin, die ich noch nicht persönlich kenne"
+        },
+        {
+          "key": "ZIEL",
+          "label": "Ziel der E-Mail",
+          "example": "ein Angebot nachfassen und einen Termin vorschlagen"
+        },
+        {
+          "key": "TONALITAET",
+          "label": "Gewünschte Tonalität",
+          "example": "sachlich, freundlich, förmlich (Sie-Form)"
+        },
+        {
+          "key": "SPRACHE",
+          "label": "Sprache der E-Mail",
+          "example": "Deutsch"
+        },
+        {
+          "key": "ENTWURF",
+          "label": "Dein E-Mail-Entwurf (Rohtext)",
+          "example": "hallo, wollte nur fragen ob sie mein angebot gesehen haben und ob wir mal telefonieren können. lg"
+        },
+        {
+          "key": "MAXLAENGE",
+          "label": "Maximale Länge in Wörtern",
+          "example": "150"
+        }
+      ],
+      "note": "Funktioniert am besten in Text-KIs wie ChatGPT, Claude oder Gemini; füge deinen Entwurf jeweils vollständig ein und passe die Tonalität je nach Empfänger an.",
+      "createdAt": "2026-09-12T00:17:39.381Z",
+      "source": "eule"
+    },
+    {
+      "id": "eule-content-plan-fuer-4-wochen-mit-strategie-mtxn7yrf",
+      "title": "Content-Plan für 4 Wochen mit Strategie und Details",
+      "category": "Marketing & Social Media",
+      "tags": [
+        "Content-Plan",
+        "Social Media",
+        "Redaktionsplan",
+        "Strategie",
+        "Posting-Rhythmus"
+      ],
+      "description": "Erstellt einen ausführlichen 4-Wochen-Content-Plan mit Strategie, Themenwochen, detaillierter Beitragsplanung, Bildideen, Hashtags und Erfolgsmessung.",
+      "prompt": "Du bist eine erfahrene Social-Media-Strategin. Erstelle einen vollständigen Content-Plan für 4 Wochen für [MARKE] aus der Branche [BRANCHE] auf den Plattformen [PLATTFORMEN]. Zielgruppe: [ZIELGRUPPE]. Übergeordnetes Ziel: [ZIEL]. Tonalität: [TONALITAET]. Maximal [ANZAHL] Beiträge pro Woche.\n\nGliedere die Antwort so:\n1. Strategie-Überblick: Leitgedanke, drei Kernbotschaften, warum diese Themen zur Zielgruppe passen.\n2. Wochenübersicht: pro Woche ein Schwerpunktthema mit kurzer Begründung und einem roten Faden über alle vier Wochen.\n3. Beitragsplanung als Tabelle mit den Spalten: Wochentag und Uhrzeit, Plattform, Format (Bild, Video, Karussell, Story, Text), Content-Typ (Wissen, Einblick, Interaktion, Angebot im Verhältnis 4:3:2:1), Kernaussage, Hook für den ersten Satz, Bild- oder Videoidee, Call-to-Action, 5 passende Hashtags.\n4. Produktionshinweise: Welche Beiträge lassen sich vorproduzieren, welche Assets werden benötigt, geschätzter Zeitaufwand pro Woche.\n5. Erfolgsmessung: drei Kennzahlen pro Ziel und was nach Woche 2 überprüft werden soll.\n\nFormuliere konkret und praxisnah, vermeide Floskeln und leere Phrasen. Keine Beiträge, die nur Werbung sind, ohne Nutzen für die Zielgruppe.",
+      "placeholders": [
+        {
+          "key": "MARKE",
+          "label": "Marke, Unternehmen oder Person",
+          "example": "kleines Fahrradgeschäft mit Werkstatt"
+        },
+        {
+          "key": "BRANCHE",
+          "label": "Branche oder Themenfeld",
+          "example": "Velohandel und Reparatur"
+        },
+        {
+          "key": "PLATTFORMEN",
+          "label": "Social-Media-Plattformen",
+          "example": "Instagram und LinkedIn"
+        },
+        {
+          "key": "ZIELGRUPPE",
+          "label": "Zielgruppe",
+          "example": "Pendlerinnen und Pendler zwischen 25 und 45 in der Stadt"
+        },
+        {
+          "key": "ZIEL",
+          "label": "Ziel des Content-Plans",
+          "example": "mehr Werkstatt-Termine im Frühling"
+        },
+        {
+          "key": "TONALITAET",
+          "label": "Tonalität und Sprachstil",
+          "example": "locker, hilfsbereit, mit Humor"
+        },
+        {
+          "key": "ANZAHL",
+          "label": "Maximale Beiträge pro Woche",
+          "example": "4"
+        }
+      ],
+      "note": "Ich habe die Vorlage deutlich erweitert: neu sind eine Rolle für die KI, eine Strategie-Ebene mit Kernbotschaften, eine detaillierte Tabellenstruktur mit Uhrzeit, Bildidee und Hashtags, Produktionshinweise sowie ein Abschnitt zur Erfolgsmessung; zudem kamen die Platzhalter [BRANCHE] und [TONALITAET] hinzu. Funktioniert am besten in Text-KIs wie ChatGPT oder Claude.",
+      "createdAt": "2026-09-12T00:24:44.476Z",
+      "source": "eule"
+    }
+  ]
+}

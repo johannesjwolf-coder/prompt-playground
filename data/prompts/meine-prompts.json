@@ -1,0 +1,14 @@
+{
+  "category": "Eigene Vorlagen",
+  "description": "Deine eigenen Prompts. Diese JSON-Datei kannst du frei bearbeiten – ohne Code.",
+  "templates": [
+    {
+      "id": "eigene-beispiel",
+      "title": "Beispiel: Eigene Vorlage (kann gelöscht werden)",
+      "category": "Eigene Vorlagen",
+      "tags": ["Beispiel"],
+      "description": "Zeigt, wie ein eigener Prompt in dieser JSON-Datei aussieht. Platzhalter in eckigen Klammern werden automatisch erkannt.",
+      "prompt": "Erkläre mir [THEMA] in drei kurzen Absätzen für [ZIELGRUPPE]. Nutze ein anschauliches Beispiel."
+    }
+  ]
+}
